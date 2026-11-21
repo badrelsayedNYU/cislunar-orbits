@@ -24,7 +24,7 @@ from cr3bp.continuation import (Family, continue_family, find_tangent_bifurcatio
                                 lyapunov_linear_guess)
 from cr3bp.correction import V_from_state  # noqa: E402
 from cr3bp.dynamics import propagate  # noqa: E402
-from cr3bp.jpl import compare_family, load_family  # noqa: E402
+from cr3bp.jpl import FOLD_DC, compare_family, load_family, pointwise_compare  # noqa: E402
 from cr3bp.stability import analyze  # noqa: E402
 from cr3bp.units import MU, nd_to_km  # noqa: E402
 
@@ -120,9 +120,38 @@ def postprocess(fam: Family, cat_names):
         cat = load_family(cname)
         cmp = compare_family(cat, a["X0"], Xhalf, a["C"], a["T"], diag["nu"])
         ok = np.isfinite(cmp["T_relerr"])
+        away = ok & ~cmp["near_fold"]
         data[f"T_cat_{cname}"] = cmp["T_cat"]
         data[f"nu_cat_{cname}"] = cmp["nu_cat"]
+        data[f"near_fold_{cname}"] = cmp["near_fold"]
+        # pointwise check at 60 catalog orbits spread over the part of the catalog that lies
+        # within the computed family: mapped to an interior member and within 0.01 LU in state
+        # space (about twice the largest spacing between consecutive computed members)
+        inside = np.where((cmp["catalog_position"] > 0) & (cmp["catalog_position"] < n - 1)
+                          & (cmp["catalog_ic_distance"] < 0.01))[0]
+        idx = inside[np.linspace(0, len(inside) - 1, 60).astype(int)]
+        pw, pw_failed = pointwise_compare(cat, a["X0"], Xhalf, a["T"], fam.planar, idx)
+        pwT = np.array([abs(r["T"] - r["T_cat"]) / r["T_cat"] for r in pw])
+        pwC = np.array([abs(r["C"] - r["C_cat"]) for r in pw])
+        pwN = np.array([abs(r["nu"] - r["nu_cat"]) / r["nu_cat"] for r in pw])
+        pwX = np.array([r["ic_difference"] for r in pw])
         summary["comparisons"][cname] = {
+            "n_compared_excluding_folds": int(away.sum()),
+            "C_folds": [float(c) for c in cmp["C_folds"]],
+            "fold_exclusion_dC": FOLD_DC,
+            "T_relerr_max_excluding_folds": float(np.max(cmp["T_relerr"][away])),
+            "nu_relerr_max_excluding_folds": float(np.max(cmp["nu_relerr"][away])),
+            "catalog_orbits_within_family": int(len(inside)),
+            "pointwise": {
+                "n": len(pw),
+                "failed": pw_failed,
+                "T_relerr_max": float(pwT.max()), "T_relerr_median": float(np.median(pwT)),
+                "C_abserr_max": float(pwC.max()), "C_abserr_median": float(np.median(pwC)),
+                "nu_relerr_max": float(pwN.max()), "nu_relerr_median": float(np.median(pwN)),
+                "ic_difference_max": float(pwX.max()),
+                "C_range": [min(r["C_cat"] for r in pw), max(r["C_cat"] for r in pw)],
+                "fixed_variables": sorted({r["fixed_variable"] for r in pw}),
+            },
             "catalog_count": len(cat),
             "catalog_fetched_utc": cat.fetched_utc,
             "n_compared": int(ok.sum()),
@@ -177,6 +206,59 @@ def run_lyapunov(which):
     return fam, data, summary
 
 
+def moon_distance_min(V, planar=False, n=1500):
+    """Closest approach to the Moon over a half period (by symmetry, over the whole orbit)."""
+    from cr3bp.correction import state_from_V
+
+    X = state_from_V(V, planar)
+    a = propagate(X, V[-1], MU, t_eval=np.linspace(0, V[-1], n))
+    return float(np.min(np.linalg.norm(a.X[:, :3] - np.array([1 - MU, 0, 0]), axis=1)))
+
+
+R_TIGHT = 0.05   # LU (~19,500 km): orbits passing closer to the Moon use rtol = atol = 1e-13
+
+
+def run_halo(which):
+    """Northern halo branch from the Lyapunov bifurcation; southern branch by z -> -z."""
+    from cr3bp.correction import natural_constraint
+    from cr3bp.units import R_MOON_KM, km_to_nd
+
+    lyap = json.loads((OUT / f"lyapunov_L{which}.json").read_text())
+    b = lyap["bifurcations"][0]
+    t0 = time.time()
+    V = V_from_state(np.array(b["X0"]), b["T"], False)
+    z_step = 1e-4
+    V[1] = z_step                                   # step off the planar family in +z (north)
+    fam = Family(f"halo_L{which}_N", MU, planar=False)
+    r_stop = km_to_nd(R_MOON_KM)
+    continue_family(
+        fam, V, n_max=3000, natural_index="auto", natural_step=1e-3, natural_step_max=4e-3,
+        max_natural=10, start_extra=natural_constraint(1, z_step), ds=4e-3, ds_max=4e-3,
+        rtol_fn=lambda V: 1e-13 if moon_distance_min(V) < R_TIGHT else 1e-12,
+        stop=lambda o, V: moon_distance_min(V) < r_stop, verbose=True)
+    fam.log.append(f"stopped when the perilune radius fell below the lunar radius "
+                   f"({R_MOON_KM} km)")
+    north, sn = postprocess(fam, [f"halo_L{which}_N"])
+    sn["runtime_s"] = time.time() - t0
+    sn["bifurcation_C"] = b["C"]
+    save(fam.name, north, sn)
+
+    # southern branch: (x, y, z, vx, vy, vz) -> (x, y, -z, vx, vy, -vz) maps solutions to solutions
+    south_fam = Family(f"halo_L{which}_S", MU, planar=False, log=list(fam.log))
+    mirror = np.diag([1, 1, -1, 1, 1, -1.0])
+    from cr3bp.continuation import Orbit
+    for o in fam.orbits:
+        south_fam.orbits.append(Orbit(X0=mirror @ o.X0, T=o.T, C=o.C, residual=o.residual,
+                                      rtol=o.rtol, method=o.method))
+    south, ss = postprocess(south_fam, [f"halo_L{which}_S"])
+    ss["derived_from"] = fam.name + " by z -> -z symmetry (each mirrored orbit re-integrated)"
+    ss["bifurcation_C"] = b["C"]
+    save(south_fam.name, south, ss)
+    for summ in (sn, ss):
+        print(json.dumps({k: v for k, v in summ.items() if k != "continuation_log"}, indent=1,
+                         default=float))
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--only", choices=["lyapunov", "halo"], default=None)
@@ -184,6 +266,9 @@ def main():
     if args.only in (None, "lyapunov"):
         for which in (1, 2):
             run_lyapunov(which)
+    if args.only in (None, "halo"):
+        for which in (1, 2):
+            run_halo(which)
 
 
 if __name__ == "__main__":

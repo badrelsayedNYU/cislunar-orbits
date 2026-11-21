@@ -72,13 +72,21 @@ def lyapunov_linear_guess(mu, which: int, Ax: float):
 
 def continue_family(family: Family, V_start, *, n_max, ds=1e-3, ds_min=1e-6, ds_max=0.02,
                     natural_index=0, natural_step=None, natural_step_max=None, start_with_natural=True,
-                    stop=None, rtol_fn=None, tangent0=None, tol=1e-12, verbose=False):
+                    stop=None, rtol_fn=None, tangent0=None, tol=1e-12, verbose=False,
+                    max_natural=None, start_extra=None):
     """Grow `family` from the corrected free-variable vector V_start.
 
     Natural-parameter steps change V[natural_index] by natural_step with a secant/tangent
     predictor. If a natural step fails to converge after halving down to ds_min, the method
     switches permanently to pseudo-arclength continuation (recorded in family.switched_to_pac_at).
     stop(orbit, V) -> bool ends the continuation; rtol_fn(V) -> tolerance chooses rtol = atol.
+
+    natural_index="auto" fixes, at every step, the free variable (excluding T/2) with the largest
+    component in the family tangent, i.e. the one changing fastest along the family there.
+    natural_step is then the signed change of that variable along the current tangent direction.
+    max_natural switches to pseudo-arclength after that many members even if natural steps work.
+    start_extra is an optional extra constraint for the first correction (e.g. fixing z0 when
+    stepping off a bifurcation, where the minimum-norm step could fall back onto the planar family).
     """
     mu, planar = family.mu, family.planar
     rtol_fn = rtol_fn or (lambda V: 1e-12)
@@ -91,10 +99,12 @@ def continue_family(family: Family, V_start, *, n_max, ds=1e-3, ds_min=1e-6, ds_
         return o
 
     rt = rtol_fn(V_start)
-    c0 = correct(V_start, mu, planar, tol=tol, rtol=rt, atol=rt)
+    c0 = correct(V_start, mu, planar, extra=start_extra, tol=tol, rtol=rt, atol=rt)
     V = c0.V
     tangent = family_tangent(c0.DF, tangent0)
-    if tangent0 is None and natural_step is not None and np.sign(tangent[natural_index]) != np.sign(natural_step):
+    auto = natural_index == "auto"
+    k0 = int(np.argmax(np.abs(tangent[:-1]))) if auto else natural_index
+    if tangent0 is None and natural_step is not None and np.sign(tangent[k0]) != np.sign(natural_step):
         tangent = -tangent
     add(V, "natural" if start_with_natural else "pseudo-arclength", c0.residual, rt)
 
@@ -105,10 +115,12 @@ def continue_family(family: Family, V_start, *, n_max, ds=1e-3, ds_min=1e-6, ds_
         rt = rtol_fn(V)
         try:
             if use_natural:
+                k = int(np.argmax(np.abs(tangent[:-1]))) if auto else natural_index
                 # tangent predictor scaled so the natural parameter advances by dn
-                scale = dn / tangent[natural_index]
-                Vg = V + scale * tangent
-                extra = natural_constraint(natural_index, V[natural_index] + dn)
+                # (for "auto", dn is a magnitude taken along the current tangent direction)
+                step_k = abs(dn) * np.sign(tangent[k]) if auto else dn
+                Vg = V + (step_k / tangent[k]) * tangent
+                extra = natural_constraint(k, V[k] + step_k)
                 cr = correct(Vg, mu, planar, extra=extra, tol=tol, rtol=rt, atol=rt)
             else:
                 Vg = V + h * tangent
@@ -149,6 +161,11 @@ def continue_family(family: Family, V_start, *, n_max, ds=1e-3, ds_min=1e-6, ds_
                 h = max(h / 2, ds_min)
         if stop is not None and stop(o, V):
             break
+        if use_natural and max_natural is not None and len(family.orbits) >= max_natural:
+            use_natural = False
+            family.switched_to_pac_at = len(family.orbits)
+            family.log.append(f"natural-parameter continuation used for the first {max_natural} "
+                              f"members; pseudo-arclength from member {max_natural}")
     return family
 
 

@@ -1,0 +1,78 @@
+{
+ "family": "halo_L2_S",
+ "members": 293,
+ "C_range": [
+  3.015178170396509,
+  3.1521188591675253
+ ],
+ "T_range": [
+  1.3583082873083736,
+  3.4155308114557092
+ ],
+ "max_closure": 6.196172194016489e-12,
+ "max_half_period_residual": 9.737572667186495e-13,
+ "max_pair_defect": 2.2414481382071472e-10,
+ "max_det_error": 2.7211033426510767e-10,
+ "rtol_counts": {
+  "1e-13": 145,
+  "1e-12": 148
+ },
+ "min_perilune_km": 1719.0146577175362,
+ "continuation_log": [
+  "natural-parameter continuation used for the first 10 members; pseudo-arclength from member 10",
+  "stopped when the perilune radius fell below the lunar radius (1737.1 km)",
+  "0 members re-corrected at rtol = atol = 1e-13 (closure > 5e-11 at the default tolerance)",
+  "0 members re-corrected at rtol = atol = 1e-13 (closure > 5e-11 at the default tolerance)"
+ ],
+ "switched_to_pac_at": null,
+ "methods": {
+  "natural": 10,
+  "pseudo-arclength": 283
+ },
+ "comparisons": {
+  "halo_L2_S": {
+   "n_compared_excluding_folds": 279,
+   "C_folds": [
+    3.015178170396509
+   ],
+   "fold_exclusion_dC": 0.0001,
+   "T_relerr_max_excluding_folds": 4.9850075357753815e-09,
+   "nu_relerr_max_excluding_folds": 0.00043026043373351337,
+   "catalog_orbits_within_family": 1289,
+   "pointwise": {
+    "n": 60,
+    "failed": 0,
+    "T_relerr_max": 3.733027853089534e-12,
+    "T_relerr_median": 1.3916432574293673e-14,
+    "C_abserr_max": 2.851052727237402e-13,
+    "C_abserr_median": 7.327471962526033e-15,
+    "nu_relerr_max": 2.158203010584022e-09,
+    "nu_relerr_median": 1.1168403369721795e-11,
+    "ic_difference_max": 7.497329621531272e-12,
+    "C_range": [
+     3.01517767456737,
+     3.15211616167647
+    ],
+    "fixed_variables": [
+     "vy0",
+     "x0",
+     "z0"
+    ]
+   },
+   "catalog_count": 1535,
+   "catalog_fetched_utc": "2026-11-21T15:46:23Z",
+   "n_compared": 290,
+   "C_compared": [
+    3.015178460589339,
+    3.1521135872854997
+   ],
+   "T_relerr_max": 0.018993822194275003,
+   "T_relerr_median": 2.0915546290105458e-12,
+   "nu_relerr_max": 0.32574873316184005,
+   "nu_relerr_median": 2.3664695090014132e-11,
+   "catalog_ic_distance_median": 0.00040387290776098053
+  }
+ },
+ "derived_from": "halo_L2_N by z -> -z symmetry (each mirrored orbit re-integrated)",
+ "bifurcation_C": 3.1521189031001824
+}

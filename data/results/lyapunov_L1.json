@@ -27,6 +27,30 @@
  },
  "comparisons": {
   "lyapunov_L1": {
+   "n_compared_excluding_folds": 215,
+   "C_folds": [],
+   "fold_exclusion_dC": 0.0001,
+   "T_relerr_max_excluding_folds": 2.3994548083440974e-12,
+   "nu_relerr_max_excluding_folds": 3.012688147525265e-07,
+   "catalog_orbits_within_family": 3071,
+   "pointwise": {
+    "n": 60,
+    "failed": 0,
+    "T_relerr_max": 1.134952637236877e-12,
+    "T_relerr_median": 1.370248610422823e-13,
+    "C_abserr_max": 2.5934809855243657e-13,
+    "C_abserr_median": 3.397282455352979e-14,
+    "nu_relerr_max": 3.2408576754192605e-07,
+    "nu_relerr_median": 4.043769389178869e-10,
+    "ic_difference_max": 1.5537797287500563e-12,
+    "C_range": [
+     2.74151447391072,
+     3.18824708656823
+    ],
+    "fixed_variables": [
+     "vy0"
+    ]
+   },
    "catalog_count": 3108,
    "catalog_fetched_utc": "2026-11-21T15:46:13Z",
    "n_compared": 215,
@@ -41,7 +65,7 @@
    "catalog_ic_distance_median": 0.0017654447119296072
   }
  },
- "runtime_s": 19.237069845199585,
+ "runtime_s": 24.007786989212036,
  "bifurcations": [
   {
    "index": 8,

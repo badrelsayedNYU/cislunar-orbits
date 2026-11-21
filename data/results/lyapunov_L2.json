@@ -26,6 +26,30 @@
  },
  "comparisons": {
   "lyapunov_L2": {
+   "n_compared_excluding_folds": 154,
+   "C_folds": [],
+   "fold_exclusion_dC": 0.0001,
+   "T_relerr_max_excluding_folds": 4.538634104104638e-12,
+   "nu_relerr_max_excluding_folds": 0.00016027379245165793,
+   "catalog_orbits_within_family": 4272,
+   "pointwise": {
+    "n": 60,
+    "failed": 0,
+    "T_relerr_max": 2.8617430868830546e-12,
+    "T_relerr_median": 2.165091973855609e-14,
+    "C_abserr_max": 1.808331262509455e-12,
+    "C_abserr_median": 4.241051954068098e-14,
+    "nu_relerr_max": 0.0009510290363204605,
+    "nu_relerr_median": 5.185056641022206e-07,
+    "ic_difference_max": 1.7940164475325138e-13,
+    "C_range": [
+     2.87259018127887,
+     3.17212278855669
+    ],
+    "fixed_variables": [
+     "vy0"
+    ]
+   },
    "catalog_count": 4298,
    "catalog_fetched_utc": "2026-11-21T15:46:14Z",
    "n_compared": 154,
@@ -40,7 +64,7 @@
    "catalog_ic_distance_median": 0.005341850662512073
   }
  },
- "runtime_s": 14.090646743774414,
+ "runtime_s": 19.27181315422058,
  "bifurcations": [
   {
    "index": 14,

@@ -89,6 +89,9 @@ def _monotone_runs(C):
     return runs
 
 
+FOLD_DC = 1e-4   # orbits with |C - C_fold| < FOLD_DC are flagged as fold neighbours
+
+
 def compare_family(cat: CatalogFamily, X0, Xhalf, C, T, nu, *, min_run=5):
     """Interpolate the catalog's period and stability index at each computed orbit's Jacobi constant.
 
@@ -120,7 +123,14 @@ def compare_family(cat: CatalogFamily, X0, Xhalf, C, T, nu, *, min_run=5):
 
     T_cat = np.full(n, np.nan)
     nu_cat = np.full(n, np.nan)
-    for i0, i1 in _monotone_runs(C):
+    runs = _monotone_runs(C)
+    # turning points of C along the family (interior run boundaries): dT/dC is unbounded there,
+    # so interpolation in C is ill-conditioned nearby
+    C_folds = np.array([C[i1] for (_, i1) in runs[:-1]])
+    near_fold = np.zeros(n, bool)
+    if len(C_folds):
+        near_fold = np.min(np.abs(C[:, None] - C_folds[None, :]), axis=1) < FOLD_DC
+    for i0, i1 in runs:
         if i1 - i0 + 1 < min_run:
             continue
         # catalog orbits beyond either end of the computed family all map to the end members;
@@ -148,4 +158,60 @@ def compare_family(cat: CatalogFamily, X0, Xhalf, C, T, nu, *, min_run=5):
         "nu_relerr": np.abs(nu - nu_cat) / nu_cat,
         "catalog_ic_distance": dmin,
         "catalog_position": pos,
+        "near_fold": near_fold,
+        "C_folds": C_folds,
     }
+
+
+def pointwise_compare(cat: CatalogFamily, X0_fam, Xhalf_fam, T_fam, planar, idx, *, rtol=1e-13):
+    """Direct comparison with individual catalog orbits, without interpolation.
+
+    For catalog orbit j: start from the nearest computed family member (represented from whichever
+    perpendicular x-z crossing, X0 or X(T/2), is nearer to the catalog IC), pick the free variable
+    (x0, z0 or vy0) with the largest component of the local family tangent, fix it to the catalog
+    value, and correct. The result is our orbit at the catalog's location on the family; its
+    period, Jacobi constant and stability index are compared with the catalog's. Only one
+    coordinate of the catalog IC is used (as the target of the fixed variable), and the method
+    works at folds in C. Returns (list of result dicts, number of failed corrections).
+    """
+    from .correction import (CorrectionError, V_from_state, correct, family_tangent,
+                             natural_constraint, state_from_V)
+    from .dynamics import jacobi
+    from .stability import analyze
+    from .units import MU
+
+    out, failed = [], 0
+    for j in idx:
+        Xc = cat.states[j]
+        d0 = np.linalg.norm(X0_fam - Xc, axis=1)
+        d1 = np.linalg.norm(Xhalf_fam - Xc, axis=1)
+        if d0.min() <= d1.min():
+            k_near = int(np.argmin(d0))
+            Xs = X0_fam[k_near]
+        else:
+            k_near = int(np.argmin(d1))
+            Xs = Xhalf_fam[k_near]
+        try:
+            V = V_from_state(Xs, T_fam[k_near], planar)
+            c0 = correct(V, MU, planar, rtol=rtol, atol=rtol)
+            tan = family_tangent(c0.DF)
+            k = int(np.argmax(np.abs(tan[:-1])))
+            target = V_from_state(Xc, cat.period[j], planar)[k]
+            Vg = c0.V + (target - c0.V[k]) / tan[k] * tan
+            c = correct(Vg, MU, planar, extra=natural_constraint(k, target), rtol=rtol, atol=rtol)
+        except (CorrectionError, np.linalg.LinAlgError, RuntimeError):
+            failed += 1
+            continue
+        X = state_from_V(c.V, planar)
+        T = 2 * c.V[-1]
+        d = analyze(X, T, MU, rtol=rtol)
+        out.append({
+            "catalog_index": int(j),
+            "fixed_variable": ["x0", "vy0"][k] if planar else ["x0", "z0", "vy0"][k],
+            "T": T, "T_cat": float(cat.period[j]),
+            "C": float(jacobi(X, MU)), "C_cat": float(cat.jacobi[j]),
+            "nu": d["nu"], "nu_cat": float(cat.stability[j]),
+            "ic_difference": float(np.linalg.norm(X - Xc)),
+            "closure": d["closure"],
+        })
+    return out, failed
