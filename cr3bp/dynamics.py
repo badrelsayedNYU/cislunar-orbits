@@ -168,3 +168,28 @@ def propagate_to_crossing(X0, mu, *, stm=False, n_cross=1, t_max=20.0, direction
         X_events=rest.X_events,
         sol=None,
     )
+
+
+def apses(X0, T, mu, body="moon", rtol=RTOL, atol=None, n=4001):
+    """(r_min, r_max, t_min, t_max) of the distance to the Moon (or Earth) over one period.
+
+    Dense sampling of the DOP853 interpolant, then bounded scalar refinement of each extremum.
+    """
+    from scipy.optimize import minimize_scalar
+
+    atol = rtol if atol is None else atol
+    c = np.array([1 - mu, 0, 0]) if body == "moon" else np.array([-mu, 0, 0])
+    arc = propagate(X0, T, mu, dense=True, rtol=rtol, atol=atol)
+    t = np.linspace(0, T, n)
+    r = np.linalg.norm(arc.sol(t)[:3].T - c, axis=1)
+
+    def dist(tt):
+        return np.linalg.norm(arc.sol(tt)[:3] - c)
+
+    out = []
+    for i, sgn in ((int(np.argmin(r)), 1.0), (int(np.argmax(r)), -1.0)):
+        lo, hi = t[max(i - 1, 0)], t[min(i + 1, n - 1)]
+        res = minimize_scalar(lambda tt: sgn * dist(tt), bounds=(lo, hi), method="bounded",
+                              options={"xatol": 1e-13})
+        out.append((sgn * res.fun, res.x))
+    return out[0][0], out[1][0], out[0][1], out[1][1]

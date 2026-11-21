@@ -1,0 +1,30 @@
+{
+ "_note": "Published values used for comparison, transcribed from the sources below. Each entry records the model the number comes from (CR3BP or ephemeris). Read by scripts/make_results.py.",
+ "zimovan2017": {
+  "citation": "E. M. Zimovan, K. C. Howell, D. C. Davis, \"Near Rectilinear Halo Orbits and Their Application in Cis-Lunar Space,\" 3rd IAA Conference on Dynamics and Control of Space Systems (DyCoSS), Moscow, 2017, paper IAA-AAS-DyCoSS3-125.",
+  "url": "https://engineering.purdue.edu/people/kathleen.howell.1/Publications/Conferences/2017_IAA_ZimHowDav.pdf",
+  "model": "CR3BP (Earth-Moon); values read from the paper's Figure 9, stated as approximate",
+  "quote": "a 4:1 synodic resonance, that occurs for an NRHO with perilune radius of about 5600 km ... A 3:1 synodic resonance occurs for an NRHO with perilune radius equal to approximately 15000 km, while the 9:2 resonant NRHO possesses a perilune radius of about 3150 km.",
+  "location": "p. 9-10, discussion of Figure 9",
+  "synodic_period_days": 29.5306,
+  "perilune_radius_km": {"9:2": 3150, "4:1": 5600, "3:1": 15000},
+  "characteristic_quantities": "not stated in the paper"
+ },
+ "lee2019": {
+  "citation": "D. E. Lee, \"White Paper: Gateway Destination Orbit Model: A Continuous 15 Year NRHO Reference Trajectory,\" NASA Johnson Space Center, August 20, 2019, NTRS 20190030294.",
+  "url": "https://ntrs.nasa.gov/citations/20190030294",
+  "model": "Ephemeris (n-body point-mass gravity, 15-year reference trajectory with small velocity adjustments every revolution); NOT CR3BP",
+  "quote": "The resulting orbit has a perilune radius that varies from 3196 to 3557 km, with an average of 3366 km. The average orbit period of the reference trajectory is 6.562 days",
+  "location": "p. 4",
+  "perilune_radius_km": {"min": 3196, "max": 3557, "mean": 3366},
+  "period_days_mean": 6.562
+ },
+ "folta2022": {
+  "citation": "D. Folta, N. Bosanac, I. Elliott, L. Mann, R. Mesarch, J. Rosales, \"Astrodynamics Convention and Modeling Reference for Lunar, Cislunar, and Libration Point Orbits,\" NASA/TP-20220014814, Version 1.1, December 2022.",
+  "url": "https://ntrs.nasa.gov/citations/20220014814",
+  "model": "CR3BP (Earth-Moon)",
+  "note": "Does not tabulate the 9:2 NRHO. Used for its system constants (Table 2) and its example Lyapunov and halo orbits (Table 3, values to 6 decimals).",
+  "table2": {"GM_earth_km3s2": 398600.4415, "GM_moon_km3s2": 4902.8005821478, "l_km": 384400.0, "mu": 0.01215058535056245, "t_s": 375190.2588926273},
+  "table3_location": "p. 81 (PDF p. 86)"
+ }
+}
