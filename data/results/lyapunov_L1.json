@@ -1,0 +1,79 @@
+{
+ "family": "lyapunov_L1",
+ "members": 219,
+ "C_range": [
+  2.735748079776674,
+  3.1882821836983597
+ ],
+ "T_range": [
+  2.691786714895389,
+  7.447853882490415
+ ],
+ "max_closure": 8.738760063504491e-11,
+ "max_half_period_residual": 4.516380191575256e-12,
+ "max_pair_defect": 1.5718799817321383e-08,
+ "max_det_error": 1.5980536782755905e-08,
+ "rtol_counts": {
+  "1e-13": 4,
+  "1e-12": 215
+ },
+ "min_perilune_km": 2726.518407142734,
+ "continuation_log": [
+  "4 members re-corrected at rtol = atol = 1e-13 (closure > 5e-11 at the default tolerance)"
+ ],
+ "switched_to_pac_at": null,
+ "methods": {
+  "natural": 219
+ },
+ "comparisons": {
+  "lyapunov_L1": {
+   "catalog_count": 3108,
+   "catalog_fetched_utc": "2026-11-21T15:46:13Z",
+   "n_compared": 215,
+   "C_compared": [
+    2.7416107207688785,
+    3.1882065580487358
+   ],
+   "T_relerr_max": 2.3994548083440974e-12,
+   "T_relerr_median": 1.9766178053309258e-13,
+   "nu_relerr_max": 3.012688147525265e-07,
+   "nu_relerr_median": 1.7174120618853062e-09,
+   "catalog_ic_distance_median": 0.0017654447119296072
+  }
+ },
+ "runtime_s": 19.237069845199585,
+ "bifurcations": [
+  {
+   "index": 8,
+   "X0": [
+    0.823390898632377,
+    0.0,
+    0.0,
+    0.0,
+    0.12632640303384948,
+    0.0
+   ],
+   "T": 2.742994069468775,
+   "C": 3.174351954075874,
+   "s_z_minus_2": 2.686739719592879e-13,
+   "nu": 1180.5770793584907,
+   "closure": 1.4518015303629449e-11
+  },
+  {
+   "index": 29,
+   "X0": [
+    0.7815739303460978,
+    0.0,
+    0.0,
+    0.0,
+    0.44319780041716283,
+    0.0
+   ],
+   "T": 3.9499986743590543,
+   "C": 3.021392129284129,
+   "s_z_minus_2": 9.50350909079134e-14,
+   "nu": 200.34708834306306,
+   "closure": 3.008542717507663e-11
+  }
+ ]
+}
