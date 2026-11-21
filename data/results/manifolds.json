@@ -1,0 +1,271 @@
+{
+ "C": 3.15,
+ "x_section": 0.987849414390376,
+ "n_seeds": 300,
+ "d_km": 50.0,
+ "t_max_days": 35.4612304749125,
+ "orbits": {
+  "L1": {
+   "X0": [
+    0.8159585220553727,
+    0.0,
+    0.0,
+    0.0,
+    0.20726597483579365,
+    0.0
+   ],
+   "T": 2.844831406797344,
+   "T_days": 12.61015277233877,
+   "nu": 938.8856345548754,
+   "closure": 1.0447940991587024e-13
+  },
+  "L2": {
+   "X0": [
+    1.1819428814847814,
+    0.0,
+    0.0,
+    0.0,
+    -0.16356050542301648,
+    0.0
+   ],
+   "T": 3.420569721965831,
+   "T_days": 15.162201408267212,
+   "nu": 594.2516615104507,
+   "closure": 1.030391652666944e-11
+  }
+ },
+ "branches": {
+  "L1_unstable": {
+   "eigenvalue": 1877.7707365633753,
+   "section_points": 192,
+   "impacts": {
+    "moon": 108,
+    "earth": 0
+   },
+   "jacobi_drift_max": 4.984457291357103e-11,
+   "jacobi_drift_median": 4.630740235711528e-12,
+   "jacobi_step_offset_max": 8.570585308120826e-08
+  },
+  "L2_stable": {
+   "eigenvalue": 0.0008413949621527912,
+   "section_points": 233,
+   "impacts": {
+    "moon": 67,
+    "earth": 0
+   },
+   "jacobi_drift_max": 2.9181101979247615e-11,
+   "jacobi_drift_median": 4.307665335545607e-12,
+   "jacobi_step_offset_max": 6.381844119829339e-08
+  }
+ },
+ "step_size_study": {
+  "L1_unstable": {
+   "5": {
+    "section_points": 185,
+    "impacts": {
+     "moon": 115,
+     "earth": 0
+    },
+    "dy_km_median": 1.6866802727767307,
+    "dy_km_p95": 5.610246146376596,
+    "dvy_mps_median": 0.0004906707861683936,
+    "dvy_mps_p95": 0.007294962404909188,
+    "jacobi_step_offset_max": 8.564100539842912e-10,
+    "jacobi_drift_max": 5.220357479629456e-11
+   },
+   "10": {
+    "section_points": 189,
+    "impacts": {
+     "moon": 111,
+     "earth": 0
+    },
+    "dy_km_median": 1.7781631669720324,
+    "dy_km_p95": 5.8638419393605234,
+    "dvy_mps_median": 0.0005080137144613801,
+    "dvy_mps_p95": 0.006747763945441245,
+    "jacobi_step_offset_max": 3.425896899500458e-09,
+    "jacobi_drift_max": 2.8394619988603154e-11
+   },
+   "25": {
+    "section_points": 191,
+    "impacts": {
+     "moon": 109,
+     "earth": 0
+    },
+    "dy_km_median": 1.3433070503803135,
+    "dy_km_p95": 5.7198375455197965,
+    "dvy_mps_median": 0.0003191694635512304,
+    "dvy_mps_p95": 0.006520275564189605,
+    "jacobi_step_offset_max": 2.141729282811866e-08,
+    "jacobi_drift_max": 2.3730795106757796e-11
+   },
+   "50": {
+    "section_points": 192,
+    "impacts": {
+     "moon": 108,
+     "earth": 0
+    },
+    "dy_km_median": 0.0,
+    "dy_km_p95": 0.0,
+    "dvy_mps_median": 0.0,
+    "dvy_mps_p95": 0.0,
+    "jacobi_step_offset_max": 8.570585308120826e-08,
+    "jacobi_drift_max": 4.984457291357103e-11
+   },
+   "100": {
+    "section_points": 194,
+    "impacts": {
+     "moon": 106,
+     "earth": 0
+    },
+    "dy_km_median": 1.3590448720282806,
+    "dy_km_p95": 6.307727728777819,
+    "dvy_mps_median": 0.0005202154862042837,
+    "dvy_mps_p95": 0.007354714292523512,
+    "jacobi_step_offset_max": 3.431176840429373e-07,
+    "jacobi_drift_max": 5.982681017258074e-11
+   },
+   "200": {
+    "section_points": 197,
+    "impacts": {
+     "moon": 103,
+     "earth": 0
+    },
+    "dy_km_median": 1.769459773829945,
+    "dy_km_p95": 6.115228609681995,
+    "dvy_mps_median": 0.0005650565283292039,
+    "dvy_mps_p95": 0.007585507608665229,
+    "jacobi_step_offset_max": 1.374834049272522e-06,
+    "jacobi_drift_max": 4.220002125521205e-11
+   },
+   "500": {
+    "section_points": 196,
+    "impacts": {
+     "moon": 104,
+     "earth": 0
+    },
+    "dy_km_median": 1.3521098064504602,
+    "dy_km_p95": 6.034710793294744,
+    "dvy_mps_median": 0.0004778923627189337,
+    "dvy_mps_p95": 0.002123057246912627,
+    "jacobi_step_offset_max": 8.637470966910143e-06,
+    "jacobi_drift_max": 3.984190755090822e-11
+   }
+  },
+  "L2_stable": {
+   "5": {
+    "section_points": 226,
+    "impacts": {
+     "moon": 74,
+     "earth": 0
+    },
+    "dy_km_median": 1.15650823108379,
+    "dy_km_p95": 2.606561404633548,
+    "dvy_mps_median": 0.000285179537312653,
+    "dvy_mps_p95": 0.003940729881232407,
+    "jacobi_step_offset_max": 6.376543737474094e-10,
+    "jacobi_drift_max": 4.766320671478752e-11
+   },
+   "10": {
+    "section_points": 228,
+    "impacts": {
+     "moon": 72,
+     "earth": 0
+    },
+    "dy_km_median": 1.103862620449005,
+    "dy_km_p95": 2.792830701474167,
+    "dvy_mps_median": 0.00028503885814306165,
+    "dvy_mps_p95": 0.005813172364649699,
+    "jacobi_step_offset_max": 2.5508373191485134e-09,
+    "jacobi_drift_max": 4.3575365538117694e-11
+   },
+   "25": {
+    "section_points": 231,
+    "impacts": {
+     "moon": 69,
+     "earth": 0
+    },
+    "dy_km_median": 1.3132824220322044,
+    "dy_km_p95": 2.484487982409353,
+    "dvy_mps_median": 0.0003326628714175946,
+    "dvy_mps_p95": 0.005265865144045159,
+    "jacobi_step_offset_max": 1.5947165366014815e-08,
+    "jacobi_drift_max": 2.6283863974185806e-11
+   },
+   "50": {
+    "section_points": 233,
+    "impacts": {
+     "moon": 67,
+     "earth": 0
+    },
+    "dy_km_median": 0.0,
+    "dy_km_p95": 0.0,
+    "dvy_mps_median": 0.0,
+    "dvy_mps_p95": 0.0,
+    "jacobi_step_offset_max": 6.381844119829339e-08,
+    "jacobi_drift_max": 2.9181101979247615e-11
+   },
+   "100": {
+    "section_points": 235,
+    "impacts": {
+     "moon": 65,
+     "earth": 0
+    },
+    "dy_km_median": 1.3976051071191344,
+    "dy_km_p95": 2.6015819305837495,
+    "dvy_mps_median": 0.00038933277021099046,
+    "dvy_mps_p95": 0.0069640553609089904,
+    "jacobi_step_offset_max": 2.5551245474986217e-07,
+    "jacobi_drift_max": 2.8743674107545303e-11
+   },
+   "200": {
+    "section_points": 239,
+    "impacts": {
+     "moon": 61,
+     "earth": 0
+    },
+    "dy_km_median": 1.1884712312655141,
+    "dy_km_p95": 2.6132512527204335,
+    "dvy_mps_median": 0.00032332396446155856,
+    "dvy_mps_p95": 0.006772451011191944,
+    "jacobi_step_offset_max": 1.0239649075316493e-06,
+    "jacobi_drift_max": 2.7852831152586077e-11
+   },
+   "500": {
+    "section_points": 241,
+    "impacts": {
+     "moon": 59,
+     "earth": 0
+    },
+    "dy_km_median": 1.134030238357888,
+    "dy_km_p95": 2.4429034601433526,
+    "dvy_mps_median": 0.0003273646649493271,
+    "dvy_mps_p95": 0.003070332810018204,
+    "jacobi_step_offset_max": 6.435961342532437e-06,
+    "jacobi_drift_max": 3.1747937612180976e-11
+   }
+  }
+ },
+ "heteroclinic": {
+  "found": true,
+  "candidates": 2,
+  "message": "The solution converged.",
+  "tau_L1": 0.6184957008054809,
+  "tau_L2": 0.484718191967434,
+  "section_state": [
+   0.9878494143903759,
+   -0.04919115308365595,
+   -1.193840366644086e-29,
+   0.5434310404271901,
+   -0.01663951546639026,
+   -7.926774004819393e-28
+  ],
+  "position_mismatch_km": 2.8234219503920364e-09,
+  "velocity_mismatch_mms": 0.013034266823222677,
+  "time_L1_to_section_days": 11.115871103687947,
+  "time_section_to_L2_days": 14.454505938280636,
+  "C_L1_side": 3.149999931906349,
+  "C_L2_side": 3.1499999458279944
+ },
+ "runtime_s": 21.10033416748047
+}
