@@ -113,7 +113,7 @@ def postprocess(fam: Family, cat_names):
         "min_perilune_km": float(nd_to_km(rp.min())),
         "continuation_log": fam.log,
         "switched_to_pac_at": fam.switched_to_pac_at,
-        "methods": {m: int(np.sum(a["method"] == m)) for m in set(a["method"])},
+        "methods": {m: int(np.sum(a["method"] == m)) for m in sorted(set(a["method"]))},
         "comparisons": {},
     }
     for cname in cat_names:
